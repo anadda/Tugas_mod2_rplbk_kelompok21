@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import './Form.css';
+import React, { useEffect } from "react";
+import "./Form.css";
 
 const finddata = (mhs_data, data_search) => {
   let res;
@@ -22,8 +22,8 @@ const finddata = (mhs_data, data_search) => {
 };
 
 function Form(props) {
-  const [nama, setNama] = React.useState('');
-  const [kelompok, setKelompok] = React.useState('');
+  const [nama, setNama] = React.useState("");
+  const [kelompok, setKelompok] = React.useState("");
   const [namaIsValid, setNamaIsValid] = React.useState(null);
   const [kelompokIsValid, setKelompokIsValid] = React.useState(null);
   const [formIsValid, setFormIsValid] = React.useState(false);
@@ -40,55 +40,66 @@ function Form(props) {
         setDataMhs(eval(text));
       });
   }, []);
-  
+
   const submitHandler = (event) => {
     event.preventDefault();
+
     if (formIsValid) {
-      console.log({ nama, kelompok });
-      props.onAddPraktikan({
-        nama: nama,
+      let result = finddata(datamhs, nama);
 
-        kelompok: kelompok,
-      });
+      if (result.length === 0) {
+        console.log("gaada");
+      } else if (result.lenght > 1) {
+        console.log("ada banyak");
+      } else {
+        props.onAddMahasiswa({
+          nama_lengkap: result[0].nama_lengkap,
+          nama_panggilan: result[0].nama_panggilan,
+          nomer_telepon: result[0].nomer_telepon,
+          id_line: result[0].id_line,
+          tanggal_lahir: result[0].tanggal_lahir,
+          nim: result[0].nim,
+          email: result[0].email,
+          hobi: result[0].hobi,
+        });
+      }
 
-      //* Reset form
-      setNama('');
-      setKelompok('');
+      // console.log(result[0].nama_lengkap);
+      setNama("");
     } else {
-      alert('Form tidak valid');
+      alert("Form is not valid");
     }
   };
-  useEffect(() => {
-    // Similiar to componentDidMount andcomponentDidUpdate:
-
-    //? This is called after the first render andafter every update
-
-    setFormIsValid(namaIsValid && kelompokIsValid);
-    console.log(`${Form.name}: ${formIsValid}`);
-  }, [namaIsValid, kelompokIsValid]);
   const changeNamaHandler = (event) => {
-    //* Set the value of the nama input to the valueof the input
-
+    //* Set the value of the nama input to the value of the input
     setNamaIsValid(event.target.value.trim().length > 0);
-
     setNama(event.target.value);
   };
-  const changeKelompokHandler = (event) => {
-    //* Set the value of the kelompok input to thevalue of the input
-    setKelompokIsValid(event.target.value.trim().length > 0);
 
-    setKelompok(event.target.value);
-  };
+  useEffect(() => {
+    // Similiar to componentDidMount and componentDidUpdate:
+    //? This is called after the first render and after every update
+    setFormIsValid(namaIsValid);
+  }, [namaIsValid]);
+
   return (
     <>
       <form onSubmit={submitHandler}>
-        <label htmlFor="nama">Nama</label>
-        <input className={namaIsValid === false ? 'invalid' : ''} autoComplete="off" type="text" id="nama" nama="nama" value={nama} onChange={changeNamaHandler} onBlur={changeNamaHandler} />
-        <label htmlFor="kelompok">Kelompok</label>
-        <input className={kelompokIsValid === false ? 'invalid' : ''} autoComplete="off" type="number" id="kelompok" nama="kelompok" value={kelompok} onChange={changeKelompokHandler} onBlur={changeKelompokHandler} />
-        <button type="submit">Buat Kartu Praktikan</button>
+        <label htmlFor="nama">Search</label>
+        <input
+          className={namaIsValid === false ? "invalid" : ""}
+          autoComplete="off"
+          type="text"
+          id="nama"
+          nama="nama"
+          value={nama}
+          onChange={changeNamaHandler}
+          onBlur={changeNamaHandler}
+        />
+        <button type="submit">Search</button>
       </form>
     </>
   );
 }
+
 export default Form;
